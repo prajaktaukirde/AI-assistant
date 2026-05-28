@@ -2,7 +2,7 @@
   "name": "ai-assistant-root",
   "private": true,
   "scripts": {
-    "build": "cd backend && npm install && npm run build",
+    "build": "cd backend && npm install --include=dev && npm run build",
     "start": "cd backend && npm start"
   }
 }
