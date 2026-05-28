@@ -11,26 +11,35 @@ export async function exportElementToPdf(
     scale: 2,
     backgroundColor: '#ffffff',
     useCORS: true,
+    scrollY: -window.scrollY,
+    windowWidth: document.documentElement.scrollWidth,
+    windowHeight: document.documentElement.scrollHeight,
   });
-  const img = canvas.toDataURL('image/jpeg', 0.95);
+  const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
   const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
-  const pageW = pdf.internal.pageSize.getWidth();
-  const pageH = pdf.internal.pageSize.getHeight();
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
 
-  const imgW = pageW;
-  const imgH = (canvas.height * imgW) / canvas.width;
+  const margin = 24;
+  const printableWidth = pageWidth - margin * 2;
+  const printableHeight = pageHeight - margin * 2;
 
-  let y = 0;
-  let remaining = imgH;
+  const properties = pdf.getImageProperties(imgData);
+  const imgWidth = printableWidth;
+  const imgHeight = (properties.height * imgWidth) / properties.width;
 
-  while (remaining > 0) {
-    pdf.addImage(img, 'JPEG', 0, y, imgW, imgH);
-    remaining -= pageH;
-    if (remaining > 0) {
-      pdf.addPage();
-      y -= pageH;
-    }
+  let heightLeft = imgHeight;
+  let position = 0;
+
+  pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
+  heightLeft -= printableHeight;
+
+  while (heightLeft > 0) {
+    position -= printableHeight;
+    pdf.addPage();
+    pdf.addImage(imgData, 'JPEG', margin, margin + position, imgWidth, imgHeight);
+    heightLeft -= printableHeight;
   }
 
   pdf.save(filename);
