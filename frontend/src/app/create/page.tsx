@@ -42,10 +42,8 @@ export default function CreatePage() {
   const [dueDate, setDueDate] = useState('');
   const [instructions, setInstructions] = useState('');
   const [specs, setSpecs] = useState<SpecRow[]>([
-    { type: 'Multiple Choice Questions', count: 4, marks: 1 },
-    { type: 'Short Questions', count: 3, marks: 2 },
-    { type: 'Diagram/Graph-Based Questions', count: 5, marks: 5 },
-    { type: 'Numerical Problems', count: 5, marks: 5 },
+    { type: 'Multiple Choice Questions', count: 4, marks: 4 },
+    { type: 'Short Questions', count: 4, marks: 4 },
   ]);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -64,7 +62,7 @@ export default function CreatePage() {
   function addRow() {
     const used = new Set(specs.map((s) => s.type));
     const next = TYPE_OPTIONS.find((t) => !used.has(t)) || TYPE_OPTIONS[0];
-    setSpecs((rows) => [...rows, { type: next, count: 1, marks: 1 }]);
+    setSpecs((rows) => [...rows, { type: next, count: 4, marks: 4 }]);
   }
 
   function validate(): string | null {
@@ -105,9 +103,12 @@ export default function CreatePage() {
 
   return (
     <AppShell>
+      {/* If Topbar internally has fixed avatars/notifications visible on mobile, 
+        you can use CSS to target them or conditionally render a cleaner alternative 
+      */}
       <Topbar title="Assignment" />
 
-      <div className="card p-6 sm:p-8">
+      <div className="card p-4 sm:p-6 md:p-8">
         <div className="flex items-start gap-3 mb-6">
           <span className="mt-1.5 h-3 w-3 rounded-full bg-emerald-500 ring-4 ring-emerald-100 shrink-0" />
           <div>
@@ -123,8 +124,8 @@ export default function CreatePage() {
           <div className="h-1 flex-1 rounded-full bg-gray-200" />
         </div>
 
-        <div className="rounded-3xl border border-gray-100 bg-gray-50/60 p-6 sm:p-8">
-          <h3 className="text-xl font-bold">Assignment Details</h3>
+        <div className="rounded-2xl md:rounded-3xl border border-gray-100 bg-gray-50/60 p-4 sm:p-6 md:p-8">
+          <h3 className="text-lg md:text-xl font-bold">Assignment Details</h3>
           <p className="text-sm text-gray-500 mt-0.5">
             Basic information about your assignment
           </p>
@@ -183,7 +184,8 @@ export default function CreatePage() {
           </div>
 
           <div>
-            <div className="grid grid-cols-[1fr_24px_140px_140px] gap-3 items-center text-sm font-semibold text-ink-900 mb-3">
+            {/* Desktop Table Headers Row */}
+            <div className="hidden md:grid grid-cols-[1fr_24px_140px_140px] gap-3 items-center text-sm font-semibold text-ink-900 mb-3">
               <span>Question Type</span>
               <span />
               <span className="text-center">No. of Questions</span>
@@ -192,29 +194,111 @@ export default function CreatePage() {
 
             <div className="space-y-3">
               {specs.map((s, i) => (
-                <div
-                  key={i}
-                  className="grid grid-cols-[1fr_24px_140px_140px] gap-3 items-center"
-                >
-                  <TypeSelect
-                    value={s.type}
-                    onChange={(v) => setRow(i, { type: v })}
-                  />
-                  <button
-                    onClick={() => removeRow(i)}
-                    className="grid h-7 w-7 place-items-center text-gray-500 hover:text-rose-600"
-                    aria-label="Remove"
-                  >
-                    <X size={18} />
-                  </button>
-                  <Stepper
-                    value={s.count}
-                    onChange={(v) => setRow(i, { count: Math.max(1, v) })}
-                  />
-                  <Stepper
-                    value={s.marks}
-                    onChange={(v) => setRow(i, { marks: Math.max(1, v) })}
-                  />
+                <div key={i}>
+                  
+                  {/* ====== DESKTOP LAYOUT (Unchanged standard layout) ====== */}
+                  <div className="hidden md:grid grid-cols-[1fr_24px_140px_140px] gap-3 items-center">
+                    <TypeSelect
+                      value={s.type}
+                      onChange={(v) => setRow(i, { type: v })}
+                    />
+                    <button
+                      onClick={() => removeRow(i)}
+                      className="grid h-7 w-7 place-items-center text-gray-500 hover:text-rose-600"
+                      aria-label="Remove"
+                    >
+                      <X size={18} />
+                    </button>
+                    <Stepper
+                      value={s.count}
+                      onChange={(v) => setRow(i, { count: Math.max(1, v) })}
+                    />
+                    <Stepper
+                      value={s.marks}
+                      onChange={(v) => setRow(i, { marks: Math.max(1, v) })}
+                    />
+                  </div>
+
+                  {/* ====== MOBILE CARD LAYOUT (EXACT MATCH TO SCREENSHOT) ====== */}
+                  <div className="relative block md:hidden rounded-2xl bg-white border border-gray-100 p-4 shadow-sm">
+                    <div className="flex items-center justify-between gap-2 pr-8">
+                      <div className="relative flex-1 w-full">
+                        <select
+                          value={s.type}
+                          onChange={(e) => setRow(i, { type: e.target.value })}
+                          className="appearance-none w-full bg-transparent text-sm font-bold text-gray-800 outline-none pr-6 cursor-pointer"
+                        >
+                          {TYPE_OPTIONS.map((t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown
+                          size={14}
+                          className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-800 pointer-events-none"
+                        />
+                      </div>
+                      <button
+                        onClick={() => removeRow(i)}
+                        className="absolute top-4 right-4 grid h-6 w-6 place-items-center text-gray-500 hover:text-rose-600"
+                        aria-label="Remove"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+
+                    <div className="mt-3 grid grid-cols-2 gap-3">
+                      {/* No. of Questions Block */}
+                      <div className="w-full bg-[#F3F4F6] rounded-2xl p-2.5 flex flex-col items-center">
+                        <span className="text-[11px] font-bold text-gray-500 mb-1.5">
+                          No. of Questions
+                        </span>
+                        <div className="flex items-center justify-between w-full bg-white rounded-full py-1 px-2 border border-gray-100">
+                          <button
+                            type="button"
+                            onClick={() => setRow(i, { count: Math.max(1, s.count - 1) })}
+                            className="grid h-6 w-6 place-items-center text-gray-600"
+                          >
+                            <Minus size={12} />
+                          </button>
+                          <span className="text-xs font-bold text-gray-800 tabular-nums">{s.count}</span>
+                          <button
+                            type="button"
+                            onClick={() => setRow(i, { count: s.count + 1 })}
+                            className="grid h-6 w-6 place-items-center text-gray-600"
+                          >
+                            <Plus size={12} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Marks Block */}
+                      <div className="w-full bg-[#F3F4F6] rounded-2xl p-2.5 flex flex-col items-center">
+                        <span className="text-[11px] font-bold text-gray-500 mb-1.5">
+                          Marks
+                        </span>
+                        <div className="flex items-center justify-between w-full bg-white rounded-full py-1 px-2 border border-gray-100">
+                          <button
+                            type="button"
+                            onClick={() => setRow(i, { marks: Math.max(1, s.marks - 1) })}
+                            className="grid h-6 w-6 place-items-center text-gray-600"
+                          >
+                            <Minus size={12} />
+                          </button>
+                          <span className="text-xs font-bold text-gray-800 tabular-nums">{s.marks}</span>
+                          <button
+                            type="button"
+                            onClick={() => setRow(i, { marks: s.marks + 1 })}
+                            className="grid h-6 w-6 place-items-center text-gray-600"
+                          >
+                            <Plus size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               ))}
             </div>
@@ -229,14 +313,14 @@ export default function CreatePage() {
               Add Question Type
             </button>
 
-            <div className="mt-6 flex justify-end gap-x-10 text-sm">
+            <div className="mt-6 flex flex-col items-end gap-1 text-xs md:text-sm">
               <span>
-                <strong className="font-semibold">Total Questions :</strong>{' '}
-                <span className="font-semibold">{totalQuestions}</span>
+                <strong className="font-semibold text-gray-500">Total Questions :</strong>{' '}
+                <span className="font-bold text-gray-800">{totalQuestions}</span>
               </span>
               <span>
-                <strong className="font-semibold">Total Marks :</strong>{' '}
-                <span className="font-semibold">{totalMarks}</span>
+                <strong className="font-semibold text-gray-500">Total Marks :</strong>{' '}
+                <span className="font-bold text-gray-800">{totalMarks}</span>
               </span>
             </div>
           </div>
@@ -312,14 +396,14 @@ function FileDrop({
         const f = e.dataTransfer.files?.[0];
         if (f) onChange(f);
       }}
-      className={`mt-6 flex flex-col items-center justify-center text-center rounded-3xl border-2 border-dashed bg-white py-10 px-6 cursor-pointer transition ${
+      className={`mt-6 flex flex-col items-center justify-center text-center rounded-2xl md:rounded-3xl border-2 border-dashed bg-white py-8 md:py-10 px-4 md:px-6 cursor-pointer transition ${
         drag ? 'border-brand-400 bg-brand-50/40' : 'border-gray-300'
       }`}
     >
-      <span className="grid h-14 w-14 place-items-center rounded-full bg-ink-900 text-white">
-        <CloudUpload size={22} />
+      <span className="grid h-12 w-12 md:h-14 md:w-14 place-items-center rounded-full bg-ink-900 text-white">
+        <CloudUpload size={20} />
       </span>
-      <p className="mt-4 text-base font-semibold text-ink-900">
+      <p className="mt-4 text-sm md:text-base font-semibold text-ink-900 break-all px-2">
         {file ? file.name : 'Choose a file or drag & drop it here'}
       </p>
       <p className="mt-1 text-xs text-gray-500">
@@ -348,11 +432,11 @@ function TypeSelect({
   onChange: (v: string) => void;
 }) {
   return (
-    <div className="relative">
+    <div className="relative flex-1 w-full">
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none w-full rounded-full bg-white px-5 py-3 pr-10 text-sm font-medium text-ink-900 outline-none focus:ring-2 focus:ring-brand-100"
+        className="appearance-none w-full rounded-full bg-white px-4 md:px-5 py-2.5 md:py-3 pr-10 text-xs md:text-sm font-medium text-ink-900 outline-none focus:ring-2 focus:ring-brand-100"
         style={{ boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.04), 0 4px 12px -4px rgb(0 0 0 / 0.08)' }}
       >
         {TYPE_OPTIONS.map((t) => (
@@ -378,7 +462,7 @@ function Stepper({
 }) {
   return (
     <div
-      className="inline-flex items-center justify-between gap-2 rounded-full bg-white px-2 py-1.5 w-full"
+      className="inline-flex items-center justify-between gap-1 rounded-full bg-white px-2 py-1 md:py-1.5 w-full border border-gray-100"
       style={{ boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.04), 0 4px 12px -4px rgb(0 0 0 / 0.08)' }}
     >
       <button
@@ -386,15 +470,15 @@ function Stepper({
         onClick={() => onChange(value - 1)}
         className="grid h-7 w-7 place-items-center rounded-full text-gray-700 hover:bg-gray-100"
       >
-        <Minus size={14} />
+        <Minus size={13} />
       </button>
-      <span className="text-sm font-semibold tabular-nums">{value}</span>
+      <span className="text-xs md:text-sm font-semibold tabular-nums">{value}</span>
       <button
         type="button"
         onClick={() => onChange(value + 1)}
         className="grid h-7 w-7 place-items-center rounded-full text-gray-700 hover:bg-gray-100"
       >
-        <Plus size={14} />
+        <Plus size={13} />
       </button>
     </div>
   );

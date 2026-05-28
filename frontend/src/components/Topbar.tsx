@@ -39,7 +39,9 @@ export function Topbar({
           {title}
         </h1>
       </div>
-      <div className="flex items-center gap-3">
+
+      {/* Added 'hidden md:flex' to prevent mobile layout duplication */}
+      <div className="hidden md:flex items-center gap-3">
         <button className="relative grid h-10 w-10 place-items-center rounded-full hover:bg-gray-100">
           <Bell size={18} />
           <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-brand-500 ring-2 ring-white" />
