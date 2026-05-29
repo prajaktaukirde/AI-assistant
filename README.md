@@ -2,11 +2,6 @@
 
 Generate beautiful, structured question papers from a prompt or source PDF. Built end-to-end with Next.js, Express, MongoDB, Redis, BullMQ, WebSockets, and Google Gemini.
 
-## Live demo
-
-- **Frontend (Vercel):** _add link after deploy_
-- **Backend (Render):** _add link after deploy_
-
 ## Tech stack
 
 | Layer    | Stack |
